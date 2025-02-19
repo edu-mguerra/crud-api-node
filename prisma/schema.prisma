@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIM
+}
+
+model user {
+  id        Int      @id @default(autoincrement())
+  status    Boolean  @default(true)
+  createdAt DateTime @default(now()) // salva a hora que o usuario foi criado
+  updateAt  DateTime @default(now()) @updatedAt // quando usuario foi alterado
+  role      Role     @default(USER)
+  name      String
+  email     String   @unique
+  Post      Post[]
+
+  @@map("users")
+}
+
+model Post {
+  id       Int     @id @default(autoincrement())
+  title    String
+  subtitle String?
+  body     String
+  userId   Int
+  author   user    @relation(fields: [userId], references: [id])
+
+  @@map("posts")
+}
+
+// um post pode ter um usuario, mas um user pode ter varios posts
